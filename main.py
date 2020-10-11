@@ -4,6 +4,8 @@ import logging
 import pychromecast
 from pychromecast.controllers.youtube import YouTubeController
 
+# TODO: Create formated printing of device listing
+
 class pyCaster:
 	def __init__(self):
 		# TODO: Move to its own update function
@@ -32,20 +34,19 @@ class pyCaster:
 		self.devi = self._chromecast_devices[dev]
 
 	def push_mp4_video(self, url):
+		# TODO: test to see if localy hosted files work
 		mc = self.devi.media_controller
 		self.devi.wait()
 		mc.play_media(url, 'video/mp4')
 
 	def push_youtube_video(self, youtube_id):
-		# TODO: Look up YoutubeCOntroller API
-		# yt = YouTubeController()
-		# self.devi.register_handler(yt)
-		# yt.play_video(youtube_id)
-
-
-
-# cast = next(cc for cc in chromecasts if cc.device.friendly_name == "Office TV")
-# cast.wait()
-# print(cast.device)
-# mc = cast.media_controller
-# mc.play_media('http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 'video/mp4')
+		''' Will not work fot 'Audio Cast' type devices, neet to create warning and
+		 get ready to catch some warnings'''
+		
+		# Establsihes device instance to chromecast module
+		yt = YouTubeController()
+		mc = pychromecast.Chromecast(self.devi.host)
+		mc.register_handler(yt)
+		# Have to add wait to establish connection
+		mc.wait()
+		yt.play_video(youtube_id)
