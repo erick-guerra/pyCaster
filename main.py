@@ -20,12 +20,12 @@ class pyCaster:
 		counter = 0
 		for device in self._chromecast_devices:
 			self.current[device.device.friendly_name] = {'option': str(counter),
-													   'Model': device.model_name,
-													   'Manufacturer': device.device.manufacturer,
-													   'IP': device.host,
-													   'Port': device.port,
-													   'UUID': str(device.uuid),
-													   'type': device.cast_type}
+			'Model': device.model_name,
+			'Manufacturer': device.device.manufacturer,
+			'IP': device.host,
+			'Port': device.port,
+			'UUID': str(device.uuid),
+			'type': device.cast_type}
 			counter += 1
 
 	def set_device(self):
