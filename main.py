@@ -1,5 +1,5 @@
 import time
-import json
+from prettytable import PrettyTable
 import logging
 import pychromecast
 from pychromecast.controllers.youtube import YouTubeController
@@ -42,7 +42,7 @@ class pyCaster:
 		mc.play_media(url, 'video/mp4')
 
 	def push_youtube_video(self, youtube_id):
-		''' Will not work fot 'Audio Cast' type devices, neet to create warning and
+		''' Will not work for 'Audio Cast' type devices, need to create warning and
 		 get ready to catch some warnings'''
 		
 		# Establsihes device instance to chromecast module
@@ -52,3 +52,10 @@ class pyCaster:
 		# Have to add wait to establish connection
 		mc.wait()
 		yt.play_video(youtube_id)
+
+	def print_devices(self):
+		table = PrettyTable()
+		table.field_names = ["Friendly Name", "Model", "IP", "Port", "option"]
+		for key in self.deviDB.keys():
+			table.add_row([key, self.deviDB[key]["Model"], self.deviDB[key]["IP"], self.deviDB[key]["Port"], self.deviDB[key]["option"]])
+		print(table)
