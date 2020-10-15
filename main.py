@@ -1,7 +1,8 @@
 import time
-from prettytable import PrettyTable
 import logging
 import pychromecast
+from sys import platform
+from prettytable import PrettyTable
 from pychromecast.controllers.youtube import YouTubeController
 
 # TODO: Create formated printing of device listing
@@ -12,23 +13,42 @@ class pyCaster:
 		self._chromecast_devices = pychromecast.get_chromecasts()
 		self.deviDB = self.current = {}
 		self.devi = []
+		self.platform = platform
 
 	def get_devices(self):
 		# logging.info('%s device was found !', self._chromecast_devices)
 		# NOTE: In windows, pychromecast returns a tupple. Will need to make
 		# OS gate checks.
-		counter = 0
-		for device in self._chromecast_devices:
-			self.current[device.device.friendly_name] = {
-				'option': str(counter),
-				'Model': device.model_name,
-				'Manufacturer': device.device.manufacturer,
-				'IP': device.host,
-				'Port': device.port,
-				'UUID': str(device.uuid),
-				'type': device.cast_type
-			}
-			counter += 1
+		if platform == "linux":
+			counter = 0
+			for device in self._chromecast_devices:
+				self.current[device.device.friendly_name] = {
+					'option': str(counter),
+					'Model': device.model_name,
+					'Manufacturer': device.device.manufacturer,
+					'IP': device.host,
+					'Port': device.port,
+					'UUID': str(device.uuid),
+					'type': device.cast_type
+				}
+				counter += 1
+		elif platform == "win32":
+			services, browser = pychromecast.discovery.discover_chromecasts()
+			counter = 0
+			for device in services:
+				self.current[device[3]] = {
+					'option': str(counter),
+					'Model': device[2],
+					#'Manufacturer': device.device.manufacturer,
+					'IP': device[4],
+					'Port': device[5],
+					'UUID': str(device[1]),
+					#'type': device.cast_type
+				}
+				counter += 1
+
+
+
 
 	def set_device(self):
 		dev = int(input("Enter Option Number: \n"))
@@ -54,8 +74,15 @@ class pyCaster:
 		yt.play_video(youtube_id)
 
 	def print_devices(self):
-		table = PrettyTable()
-		table.field_names = ["Friendly Name", "Model", "IP", "Port", "option"]
-		for key in self.deviDB.keys():
-			table.add_row([key, self.deviDB[key]["Model"], self.deviDB[key]["IP"], self.deviDB[key]["Port"], self.deviDB[key]["option"]])
-		print(table)
+		if platform == "linux":
+			table = PrettyTable()
+			table.field_names = ["Friendly Name", "Model", "IP", "Port", "option", "Cast Type"]
+			for key in self.deviDB.keys():
+				table.add_row([key, self.deviDB[key]["Model"], self.deviDB[key]["IP"], self.deviDB[key]["Port"], self.deviDB[key]["option"], self.deviDB[key]["type"]])
+			print(table)
+		elif platform == "win32":
+			table = PrettyTable()
+			table.field_names = ["Friendly Name", "Model", "IP", "Port", "option", "Cast Type"]
+			for key in self.deviDB.keys():
+				table.add_row([key, self.deviDB[key]["Model"], self.deviDB[key]["IP"], self.deviDB[key]["Port"], self.deviDB[key]["option"], self.deviDB[key]["UUID"]])
+			print(table)
